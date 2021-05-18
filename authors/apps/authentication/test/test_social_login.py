@@ -10,7 +10,7 @@ class SocialAuthenticationTests(APITestCase):
         Setup for tests
         """
         # Set up the social_auth url.
-        self.auth_url = reverse('authentication:social_auth')
+        self.auth_url = reverse("authentication:social_auth")
         self.client = APIClient()
 
     def test_new_user_signup(self):
@@ -19,8 +19,11 @@ class SocialAuthenticationTests(APITestCase):
         """
         access_token = os.getenv("test_twitter_access_token")
         access_token_secret = os.getenv("test_twitter_access_token_secret")
-        data = {"provider": "twitter", "access_token": access_token,
-                "access_token_secret": access_token_secret}
+        data = {
+            "provider": "twitter",
+            "access_token": access_token,
+            "access_token_secret": access_token_secret,
+        }
         response = self.client.post(self.auth_url, data=data)
         self.assertEqual(response.status_code, 200)
 

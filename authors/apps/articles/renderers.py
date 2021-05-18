@@ -3,8 +3,8 @@ import json
 
 
 class ArticleJSONRenderer(JSONRenderer):
-    object_label = 'article'
-    charset = 'utf-8'
+    object_label = "article"
+    charset = "utf-8"
     # pagination_object_label = 'articles'
     # pagination_count_label = 'articlesCount'
 
@@ -14,20 +14,14 @@ class ArticleJSONRenderer(JSONRenderer):
         """
         if data is not None:
             if len(data) <= 1:
-                return json.dumps({
-                    'article': data
-                })
-            return json.dumps({
-                'articles': data
-            })
-        return json.dumps({
-            'article': 'No article found.'
-        })
+                return json.dumps({"article": data})
+            return json.dumps({"articles": data})
+        return json.dumps({"article": "No article found."})
 
 
 class CommentJSONRenderer(JSONRenderer):
-    object_label = 'comment'
-    charset = 'utf-8'
+    object_label = "comment"
+    charset = "utf-8"
 
     def render(self, data, media_type=None, renderer_context=None):
         """
@@ -35,32 +29,28 @@ class CommentJSONRenderer(JSONRenderer):
         """
         if data is not None:
             if len(data) <= 1:
-                return json.dumps({
-                    'comment': data
-                })
-            return json.dumps({
-                'comments': data
-            })
-        return json.dumps({
-            'comment': 'No comment found.'
-        })
+                return json.dumps({"comment": data})
+            return json.dumps({"comments": data})
+        return json.dumps({"comment": "No comment found."})
 
 
 class RatingJSONRenderer(JSONRenderer):
-    charset = 'utf-8'
+    charset = "utf-8"
 
     def render(self, data, media_type=None, renderer_context=None):
         """
         Render ratings data.
         """
-        return json.dumps({
-            'rate': data,
-        })
+        return json.dumps(
+            {
+                "rate": data,
+            }
+        )
 
 
 class ReportJSONRenderer(JSONRenderer):
-    object_label = 'report'
-    charset = 'utf-8'
+    object_label = "report"
+    charset = "utf-8"
 
     def render(self, data, media_type=None, renderer_context=None):
         """
@@ -68,12 +58,6 @@ class ReportJSONRenderer(JSONRenderer):
         """
         if data is not None:
             if len(data) <= 1:
-                return json.dumps({
-                    'report': data
-                })
-            return json.dumps({
-                'reports': data
-            })
-        return json.dumps({
-            'report': 'No report found.'
-        })
+                return json.dumps({"report": data})
+            return json.dumps({"reports": data})
+        return json.dumps({"report": "No report found."})

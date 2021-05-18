@@ -2,7 +2,9 @@ import jwt
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.models import (
-    AbstractBaseUser, BaseUserManager, PermissionsMixin
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
 )
 from django.db import models
 
@@ -20,10 +22,10 @@ class UserManager(BaseUserManager):
     def create_user(self, username, email, password=None):
         """Create and return a `User` with an email, username and password."""
         if username is None:
-            raise TypeError('Users must have a username.')
+            raise TypeError("Users must have a username.")
 
         if email is None:
-            raise TypeError('Users must have an email address.')
+            raise TypeError("Users must have an email address.")
 
         user = self.model(username=username, email=self.normalize_email(email))
         user.set_password(password)
@@ -39,7 +41,7 @@ class UserManager(BaseUserManager):
         they want.
         """
         if password is None:
-            raise TypeError('Superusers must have a password.')
+            raise TypeError("Superusers must have a password.")
 
         user = self.create_user(username, email, password)
         user.is_superuser = True
@@ -87,8 +89,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     # The `USERNAME_FIELD` property tells us which field we will use to log in.
     # In this case, we want that to be the email field.
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
 
     # Tells Django that the UserManager class defined above should manage
     # objects of this type.
@@ -131,9 +133,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         date_now = datetime.now() + timedelta(days=30)
 
-        token = jwt.encode({
-            'id': self.pk,
-            'exp': int(date_now.strftime('%s'))
-        }, settings.SECRET_KEY, algorithm='HS256')
+        token = jwt.encode(
+            {"id": self.pk, "exp": int(date_now.strftime("%s"))},
+            settings.SECRET_KEY,
+            algorithm="HS256",
+        )
 
-        return token.decode('utf-8')
+        return token.decode("utf-8")

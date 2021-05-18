@@ -3,25 +3,22 @@ from authors.apps.core.models import TimestampedModel
 
 
 class Profile(TimestampedModel):
-    """ This class represents the user Profile model """
+    """This class represents the user Profile model"""
+
     # There is one-to-one relationship between the user an profile model
     # A user will only have one related Profile model
-    user = models.OneToOneField(
-        'authentication.User', on_delete=models.CASCADE
-    )
+    user = models.OneToOneField("authentication.User", on_delete=models.CASCADE)
     # Many-To-Many relationship where both sides of the same model (Profile)
     follows = models.ManyToManyField(
-        'self',
-        related_name='followed_by',
-        symmetrical=False
+        "self", related_name="followed_by", symmetrical=False
     )
-    
+
     bio = models.TextField(blank=True)
     image = models.URLField(blank=True)
-    bookmarks = models.ManyToManyField('articles.Article', blank=True, related_name='bookmark')
-    favorites = models.ManyToManyField('articles.Article',
-                                       related_name='favorited_by'
-                                       )
+    bookmarks = models.ManyToManyField(
+        "articles.Article", blank=True, related_name="bookmark"
+    )
+    favorites = models.ManyToManyField("articles.Article", related_name="favorited_by")
 
     get_notifications = models.BooleanField(default=True)
 
@@ -39,10 +36,10 @@ class Profile(TimestampedModel):
     def has_favorited(self, article):
         """Returns True if we have favorited an article; else False."""
         return self.favorites.filter(pk=article.pk).exists()
-    
+
     def follow(self, profile):
-       """Follow profile"""
-       self.follows.add(profile)
+        """Follow profile"""
+        self.follows.add(profile)
 
     def unfollow(self, profile):
         """Unfollow profile."""
@@ -55,7 +52,7 @@ class Profile(TimestampedModel):
     def is_followed_by(self, profile):
         """Returns True if profile is following us"""
         return self.followed_by.filter(pk=profile.pk).exists()
-    
+
     def get_followers(self, profile):
         """Returns all users following us"""
         return profile.followed_by.all()

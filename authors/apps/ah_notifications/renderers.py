@@ -1,9 +1,10 @@
 from rest_framework.renderers import JSONRenderer
 import json
 
+
 class NotificationJSONRenderer(JSONRenderer):
     # object_label = ''
-    charset = 'utf-8'
+    charset = "utf-8"
 
     def render(self, data, media_type=None, renderer_context=None):
         """
@@ -11,12 +12,6 @@ class NotificationJSONRenderer(JSONRenderer):
         """
         if data is not None:
             if len(data) <= 1:
-                return json.dumps({
-                    'notification': data
-                })
-            return json.dumps({
-                'notifications': data
-            })
-        return json.dumps({
-            'notifications': 'No article found.'
-        })
+                return json.dumps({"notification": data})
+            return json.dumps({"notifications": data})
+        return json.dumps({"notifications": "No article found."})

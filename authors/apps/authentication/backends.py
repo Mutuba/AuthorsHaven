@@ -8,13 +8,13 @@ from .models import User
 
 
 class JWTAuthentication(authentication.BaseAuthentication):
-    '''
+    """
     By subclassing Django BaseAuthentication
     we are able able to override authenticate()
     and define ours
-    '''
+    """
 
-    authentication_header_prefix = 'Bearer'
+    authentication_header_prefix = "Bearer"
 
     def authenticate(self, request):
         """
@@ -40,9 +40,9 @@ class JWTAuthentication(authentication.BaseAuthentication):
 
         # JWT token has to be decoded to get individual components (prefix, token).
 
-        prefix = token_header[0].decode('utf-8')  # The prefix.
+        prefix = token_header[0].decode("utf-8")  # The prefix.
 
-        current_token = token_header[1].decode('utf-8')  # The token string.
+        current_token = token_header[1].decode("utf-8")  # The token string.
 
         if prefix.lower() != token_header_prefix:
             # Make a comparison between prefix after decoding and the expected.
@@ -55,24 +55,24 @@ class JWTAuthentication(authentication.BaseAuthentication):
 
     def _authenticate_credentials(self, request, token):
         """
-         Private method tries to authenticate a user based on token provided.
-         Returns a jwt token and a user if successful.
+        Private method tries to authenticate a user based on token provided.
+        Returns a jwt token and a user if successful.
         """
         # user = request.user
         try:
             payload = jwt.decode(token, settings.SECRET_KEY)
         except:
-            msg = 'Invalid token. Could not decode token. Possibly Damaged.'
+            msg = "Invalid token. Could not decode token. Possibly Damaged."
             raise exceptions.AuthenticationFailed(msg)
 
-        user = User.objects.get(pk=payload['id'])
+        user = User.objects.get(pk=payload["id"])
         try:
-            user = User.objects.get(pk=payload['id'])
+            user = User.objects.get(pk=payload["id"])
         except user.DoesNotExist:
-            msg = 'Token did not match any user..'
+            msg = "Token did not match any user.."
             raise exceptions.AuthenticationFailed(msg)
 
         if not user.is_active:
-            msg = 'This user is in_active.'
+            msg = "This user is in_active."
             raise exceptions.AuthenticationFailed(msg)
         return (user, token)

@@ -16,7 +16,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
     # characters, and can not be read by the client.
     # allow_blank=True, to enable `" "` as a valid value for a password so as to customize the validation error message,
     # allow_null=True, enable `Null`/`None` as a valid value for a password
-    password = serializers.CharField(max_length=128, write_only=True,  allow_blank=True, allow_null=True)
+    password = serializers.CharField(
+        max_length=128, write_only=True, allow_blank=True, allow_null=True
+    )
 
     # Ensure emails are not longer than 128 characters,
     # allow_blank=True, to enable `" "` as a valid value for a email so as to customize the validation error message,
@@ -31,19 +33,23 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def validate_email(self, data):
         """Validate the email address"""
         email = data
-        if email == '':
-            raise serializers.ValidationError('Email field is required.')
+        if email == "":
+            raise serializers.ValidationError("Email field is required.")
         elif User.objects.filter(email=email):
-            raise serializers.ValidationError('This email is not available. Please try another.')
+            raise serializers.ValidationError(
+                "This email is not available. Please try another."
+            )
         return data
 
     def validate_username(self, data):
         """Validate the username"""
         username = data
-        if username == '':
-            raise serializers.ValidationError('Username field is required.')
+        if username == "":
+            raise serializers.ValidationError("Username field is required.")
         elif User.objects.filter(username=username):
-            raise serializers.ValidationError('This username is not available. Please try another.')
+            raise serializers.ValidationError(
+                "This username is not available. Please try another."
+            )
         return data
 
     def validate_password(self, data):
@@ -55,19 +61,23 @@ class RegistrationSerializer(serializers.ModelSerializer):
         # Ensure passwords are longer than 8 characters.
         elif len(password) < 8:
             raise serializers.ValidationError(
-                'Create a password at least 8 characters.')
+                "Create a password at least 8 characters."
+            )
         # Ensure passwords contain a number.
         elif not re.match(r"^(?=.*[0-9]).*", password):
             raise serializers.ValidationError(
-                'Create a password with at least one number.')
+                "Create a password with at least one number."
+            )
         # Ensure passwords contain an uppercase letter.
         elif not re.match(r"^(?=.*[A-Z])(?!.*\s).*", password):
             raise serializers.ValidationError(
-                "Create a password with at least one uppercase letter")
+                "Create a password with at least one uppercase letter"
+            )
         # Ensure passwords contain a special character
         elif re.match(r"^[a-zA-Z0-9_]*$", password):
             raise serializers.ValidationError(
-                "Create a password with at least one special character.")
+                "Create a password with at least one special character."
+            )
         return data
 
     # The client should not be able to send a token along with a registration
@@ -77,7 +87,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = User
         # List all of the fields that could possibly be included in a request
         # or response, including fields specified explicitly above.
-        fields = ['email', 'username', 'password', 'token']
+        fields = ["email", "username", "password", "token"]
 
     def create(self, validated_data):
         # Use the `create_user` method we wrote earlier to create a new user.
@@ -97,22 +107,18 @@ class LoginSerializer(serializers.Serializer):
         # user in, this means validating that they've provided an email
         # and password and that this combination matches one of the users in
         # our database.
-        email = data.get('email', None)
-        password = data.get('password', None)
+        email = data.get("email", None)
+        password = data.get("password", None)
 
         # As mentioned above, an email is required. Raise an exception if an
         # email is not provided.
         if email is None:
-            raise serializers.ValidationError(
-                'An email address is required to log in.'
-            )
+            raise serializers.ValidationError("An email address is required to log in.")
 
         # As mentioned above, a password is required. Raise an exception if a
         # password is not provided.
         if password is None:
-            raise serializers.ValidationError(
-                'A password is required to log in.'
-            )
+            raise serializers.ValidationError("A password is required to log in.")
 
         # The `authenticate` method is provided by Django and handles checking
         # for a user that matches this email/password combination. Notice how
@@ -124,7 +130,7 @@ class LoginSerializer(serializers.Serializer):
         # `authenticate` will return `None`. Raise an exception in this case.
         if user is None:
             raise serializers.ValidationError(
-                'A user with this email and password was not found.'
+                "A user with this email and password was not found."
             )
 
         # Django provides a flag on our `User` model called `is_active`. The
@@ -132,19 +138,12 @@ class LoginSerializer(serializers.Serializer):
         # or otherwise deactivated. This will almost never be the case, but
         # it is worth checking for. Raise an exception in this case.
         if not user.is_active:
-            raise serializers.ValidationError(
-                'This user has been deactivated.'
-            )
+            raise serializers.ValidationError("This user has been deactivated.")
 
         # The `validate` method should return a dictionary of validated data.
         # This is the data that is passed to the `create` and `update` methods
         # that we will see later on.
-        return {
-            'email': user.email,
-            'username': user.username,
-            'token': user.token
-
-        }
+        return {"email": user.email, "username": user.username, "token": user.token}
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -154,19 +153,14 @@ class UserSerializer(serializers.ModelSerializer):
     # characters. These values are the default provided by Django. We could
     # change them, but that would create extra work while introducing no real
     # benefit, so let's just stick with the defaults.
-    password = serializers.CharField(
-        max_length=128,
-        min_length=8,
-        write_only=True
-    )
+    password = serializers.CharField(max_length=128, min_length=8, write_only=True)
     profile = ProfileSerializer(write_only=True)
-    bio = serializers.CharField(source='profile.bio', read_only=True)
-    image = serializers.CharField(source='profile.image', read_only=True)
+    bio = serializers.CharField(source="profile.bio", read_only=True)
+    image = serializers.CharField(source="profile.image", read_only=True)
 
     class Meta:
         model = User
-        fields = ('email', 'username', 'password', 'bio', 'image','profile')
-
+        fields = ("email", "username", "password", "bio", "image", "profile")
 
         # The `read_only_fields` option is an alternative for explicitly
         # specifying the field with `read_only=True` like we did for password
@@ -184,8 +178,8 @@ class UserSerializer(serializers.ModelSerializer):
         # salting passwords, which is important for security. What that means
         # here is that we need to remove the password field from the
         # `validated_data` dictionary before iterating over it.
-        password = validated_data.pop('password', None)
-        user_profile_data = validated_data.pop('profile', {})
+        password = validated_data.pop("password", None)
+        user_profile_data = validated_data.pop("profile", {})
 
         for (key, value) in validated_data.items():
             # For the keys remaining in `validated_data`, we will set them on
@@ -197,7 +191,6 @@ class UserSerializer(serializers.ModelSerializer):
             # of the security stuff that we shouldn't be concerned with.
             instance.set_password(password)
 
-
         # Finally, after everything has been updated, we must explicitly save
         # the model. It's worth pointing out that `.set_password()` does not
         # save the model.
@@ -205,29 +198,26 @@ class UserSerializer(serializers.ModelSerializer):
 
         for (key, value) in user_profile_data.items():
             setattr(instance.profile, key, value)
-        
+
         instance.profile.save()
 
         return instance
 
 
 class EmailSerializer(serializers.Serializer):
-    '''
+    """
     Handles serialization of emails and returns a token generated \from the email
-    '''
+    """
+
     email = serializers.EmailField(max_length=255)
     token = serializers.CharField(max_length=255, required=False)
 
     def validate(self, payload):
-        check_user = User.objects.filter(email=payload.get('email', None))\
-            .first()
+        check_user = User.objects.filter(email=payload.get("email", None)).first()
         if not check_user:
-            raise serializers.ValidationError('Email does not exist')
+            raise serializers.ValidationError("Email does not exist")
         token = default_token_generator.make_token(check_user)
-        return{
-                'email': payload['email'],
-                'token': token
-            }
+        return {"email": payload["email"], "token": token}
 
 
 class ResetUserPasswordSerializer(serializers.Serializer):
@@ -235,42 +225,38 @@ class ResetUserPasswordSerializer(serializers.Serializer):
     # uuid = serializers.CharField(max_length=30, required=False)
     token = serializers.CharField(max_length=255, required=False)
     confirm_password = serializers.CharField(
-                min_length=6,
-                max_length=80,
-                write_only=True
-            )
-    new_password = serializers.CharField(
-                min_length=6,
-                max_length=80,
-                write_only=True
-            )
+        min_length=6, max_length=80, write_only=True
+    )
+    new_password = serializers.CharField(min_length=6, max_length=80, write_only=True)
 
     def validate(self, validated_data):
-        if validated_data['confirm_password'] != validated_data['new_password']:
-            raise serializers.ValidationError(
-                "Passwords Dont Match"
-            )
+        if validated_data["confirm_password"] != validated_data["new_password"]:
+            raise serializers.ValidationError("Passwords Dont Match")
         from django.contrib.auth.tokens import default_token_generator
-        user_email = User.objects.filter(email=validated_data.get('email',
-                                         None)).first()
+
+        user_email = User.objects.filter(
+            email=validated_data.get("email", None)
+        ).first()
         check_valid_token = default_token_generator.check_token(
-                user_email, validated_data.get('token', None)
-                )
+            user_email, validated_data.get("token", None)
+        )
         if not check_valid_token:
-            raise serializers.ValidationError(
-                    "Token expired or Invalid"
-                )
-        user_email.set_password(validated_data.get('new_password', None))
+            raise serializers.ValidationError("Token expired or Invalid")
+        user_email.set_password(validated_data.get("new_password", None))
         user_email.save()
         return validated_data
+
+
 class SocialAuthSerializer(serializers.Serializer):
     """Serializers social_auth requests"""
+
     provider = serializers.CharField(max_length=255, required=True)
-    access_token = serializers.CharField(max_length=1024, required=True, trim_whitespace=True)
+    access_token = serializers.CharField(
+        max_length=1024, required=True, trim_whitespace=True
+    )
 
 
 class SubscriptionSerializer(serializers.Serializer):
-
     def validate(self, validated_data):
         print(validated_data)
         return False

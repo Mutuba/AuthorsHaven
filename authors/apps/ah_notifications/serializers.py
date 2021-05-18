@@ -9,15 +9,17 @@ from django.utils import timezone
 
 
 class NotificationSerializer(serializers.ModelSerializer):
-    '''
+    """
     notification serializer
-    '''
-    actor =  UserSerializer('actor_object_id')
-    action_object = ArticleSerializer('action_object_object_id')
+    """
+
+    actor = UserSerializer("actor_object_id")
+    action_object = ArticleSerializer("action_object_object_id")
 
     class Meta:
-        '''
+        """
         Notification fields to be returned to users
-        '''
+        """
+
         model = Notification
-        fields = ('id', 'actor','unread','verb',  'action_object', 'timesince')
+        fields = ("id", "actor", "unread", "verb", "action_object", "timesince")

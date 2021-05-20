@@ -75,6 +75,7 @@ CORS_ORIGIN_REGEX_WHITELIST = ("localhost:8000",)
 
 ROOT_URLCONF = "authors.urls"
 
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

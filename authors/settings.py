@@ -25,7 +25,7 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "ah-leagueoflegends-staging.herokuapp.com",
+    "authors-haven-api.herokuapp.com",
     "10.43.198.23",
     "10.99.225.205",
     "127.0.0.1",

@@ -239,4 +239,5 @@ DATABASE_POOL_ARGS = {"max_overflow": 10, "pool_size": 8, "recycle": 300}
 #     }
 # }
 
+
 DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}

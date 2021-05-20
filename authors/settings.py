@@ -168,15 +168,12 @@ REST_FRAMEWORK = {
 }
 
 EMAIL_USE_TLS = True
-EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = config("EMAIL_PORT")
 
-CELERY_BROKER_URL = (
-    "amqp://localhost"  # Add a broker where the messagesare going to be stored
-)
-
+CELERY_BROKER_URL = config("CELERY_BROKER_URL")
 
 
 AUTHENTICATION_BACKENDS = (
@@ -225,8 +222,6 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.load_extra_data",
     "social_core.pipeline.user.user_details",
 )
-
-CELERY_BROKER_URL = "amqp://localhost"
 
 
 DATABASE_POOL_ARGS = {"max_overflow": 10, "pool_size": 8, "recycle": 300}

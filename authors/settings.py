@@ -224,20 +224,29 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 
-DATABASE_POOL_ARGS = {"max_overflow": 10, "pool_size": 8, "recycle": 300}
+
+DATABASES = {
+    'default': {
+
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': "localhost",
+        'PORT': config("PORT"),
+    }
+}
 
 
-# DATABASES = {
-#     'default': {
+prod_db  =  dj_database_url.config(conn_max_age=500)
 
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': config('DB_NAME'),
-#         'USER': config('DB_USER'),
-#         'PASSWORD': config('DB_PASSWORD'),
-#         'HOST': "localhost",
-#         'PORT': config("PORT"),
-#     }
-# }
+DATABASES['default'].update(prod_db)
+
+DATABASE_POOL_ARGS = {
+    'max_overflow': 10,
+    'pool_size': 8,
+    'recycle': 300
+}
 
 
-DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
+# DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}

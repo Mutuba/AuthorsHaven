@@ -64,9 +64,7 @@ class RegistrationAPIView(APIView):
             template="verify_email.html",
             context={
                 "user": user,
-                "uid": urlsafe_base64_encode(force_bytes(user_email.pk)).decode(
-                    "utf-8"
-                ),
+                "uid": urlsafe_base64_encode(force_bytes(user_email.pk)),
                 "domain": current_site.domain,
                 "token": authcheck_token.make_token(user_email),
             },
@@ -183,9 +181,7 @@ class UserForgetPasswordView(APIView):
                 template="reset_pass.html",
                 context={
                     "reset_url": reset_link,
-                    "uid": urlsafe_base64_encode(force_bytes(user_email.pk)).decode(
-                        "utf-8"
-                    ),
+                    "uid": urlsafe_base64_encode(force_bytes(user_email.pk)),
                     "domain": current_site.domain,
                     "email": serializer.data["email"],
                     "token": serializer.data["token"],

@@ -177,6 +177,8 @@ CELERY_BROKER_URL = (
     "amqp://localhost"  # Add a broker where the messagesare going to be stored
 )
 
+
+
 AUTHENTICATION_BACKENDS = (
     "social_core.backends.facebook.FacebookAppOAuth2",
     "social_core.backends.facebook.FacebookOAuth2",

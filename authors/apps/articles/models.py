@@ -41,6 +41,7 @@ class Article(TimestampedModel):
     tagList = ArrayField(
         models.CharField(max_length=255), default=None, null=True, blank=True
     )
+    
     image = models.ImageField(upload_to="myphoto/%Y/%m/%d/", null=True, max_length=255)
     # blank = True
     # a many-to-many field will map to a serializer field that

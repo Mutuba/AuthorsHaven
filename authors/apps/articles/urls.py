@@ -25,9 +25,7 @@ router = DefaultRouter(trailing_slash=False)
 app_name = "articles"
 
 urlpatterns = [
-
-    path("",  ArticleViewSet.as_view({'get': 'list'}), name="fetch_articles" ),
-    
+    path("", ArticleViewSet.as_view({"get": "list"}), name="fetch_articles"),
     path("articles/<str:slug>/like/", LikeAPIView.as_view(), name="like_article"),
     path(
         "articles/<str:slug>/dislike/", DisLikeAPIView.as_view(), name="dislike_article"

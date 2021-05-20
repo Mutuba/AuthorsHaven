@@ -227,21 +227,19 @@ SOCIAL_AUTH_PIPELINE = (
 CELERY_BROKER_URL = "amqp://localhost"
 
 
-DATABASE_POOL_ARGS = {
-    'max_overflow': 10,
-    'pool_size': 8,
-    'recycle': 300
-}
+DATABASE_POOL_ARGS = {"max_overflow": 10, "pool_size": 8, "recycle": 300}
 
 
-DATABASES = {
-    'default': {
+# DATABASES = {
+#     'default': {
 
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': "localhost",
-        'PORT': config("PORT"),
-    }
-}
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': config('DB_NAME'),
+#         'USER': config('DB_USER'),
+#         'PASSWORD': config('DB_PASSWORD'),
+#         'HOST': "localhost",
+#         'PORT': config("PORT"),
+#     }
+# }
+
+DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}

@@ -23,7 +23,6 @@ import notifications.urls
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    
     path("api/", include("authors.apps.authentication.urls")),
     path("api/articles/", include("authors.apps.articles.urls")),
     path("api/profiles/", include("authors.apps.profiles.urls")),

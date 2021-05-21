@@ -259,57 +259,52 @@ class DisLikeAPIView(UpdateAPIView):
             )
 
 
-class ArticleFilter(filters.FilterSet):
-    """
-    Class creates a custom filter class for articles,
-    for getting dynamic queries from the url
-    """
 
-    title = filters.CharFilter(field_name="title", lookup_expr="icontains")
-    description = filters.CharFilter(field_name="description", lookup_expr="icontains")
-    body = filters.CharFilter(field_name="body", lookup_expr="icontains")
-    author__username = filters.CharFilter(
-        field_name="author__username", lookup_expr="icontains"
-    )
+class ArticleFilter(filters.FilterSet):    
+    author = filters.CharFilter(method= 'filter_article_author')
+    
+    title = filters.CharFilter(method='filter_article_title')
+    
+    description = filters.CharFilter(method='filter_article_description')
+    
+    body = filters.CharFilter(method='filter_article_body')
+    
+    tags = filters.CharFilter(method='filter_article_tags')
 
     class Meta:
-        """
-        This class describes the fields to be used in the search.
-        The ArrayField has also been over-ridden
-        """
-
         model = Article
-        fields = ["title", "description", "body", "author__username", "tagList"]
-        filter_overrides = {
-            ArrayField: {
-                "filter_class": django_filters.CharFilter,
-                "extra": lambda f: {
-                    "lookup_expr": "icontains",
-                },
-            },
-        }
-
+        fields = ['author', 'title', 'description', 'body', 'tags']      
+    
+    def filter_article_title(self, queryset, name,  value):
+        return queryset.filter(title__icontains=value)
+    
+    
+    def filter_article_description(self, queryset, name,  value):
+        return queryset.filter(description__icontains=value)
+    
+    def filter_article_body(self, queryset, name,  value):
+        return queryset.filter(body__icontains=value)
+    
+    
+    def filter_article_author(self, queryset, name, value):
+        
+        return queryset.filter(author__username__icontains=value)
+                
+    def filter_article_tag(self, queryset, name, value):
+        return queryset.filter(product__slug__icontains=value)
+    
+    def filter_article_tags(self, queryset, name, value):
+        return queryset.filter(tagList__contains=[value])
 
 class ArticleSearchList(generics.ListAPIView):
     """
     Implements class to enable searching and filtering
+    
     """
 
     permission_classes = (IsAuthenticatedOrReadOnly,)
-    search_list = ["title", "body", "description", "author__username", "tagList"]
-    filter_list = [
-        "title",
-        "author__username",
-        "tagList",
-    ]
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    filter_backends = (
-        DjangoFilterBackend,
-        SearchFilter,
-    )
-    filter_fields = filter_list
-    search_fields = search_list
     filterset_class = ArticleFilter
 
 

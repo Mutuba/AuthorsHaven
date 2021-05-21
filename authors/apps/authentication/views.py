@@ -24,7 +24,7 @@ from .serializers import (
     ResetUserPasswordSerializer,
     SubscriptionSerializer,
 )
-from authors.settings import EMAIL_HOST_USER
+from authors.settings import EMAIL_HOST_USER, DEFAULT_FROM_EMAIL
 from authors.apps.core.email_with_celery import SendEmail
 from .chk_token import authcheck_token
 from .renderers import UserJSONRenderer
@@ -72,7 +72,7 @@ class RegistrationAPIView(APIView):
             e_to=[
                 user["email"],
             ],
-            e_from=EMAIL_HOST_USER,
+            e_from=DEFAULT_FROM_EMAIL,
         ).send()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -134,7 +134,8 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
 
 class VerifyAPIView(APIView):
-    """View for handling verification of user account, once the user signs up,
+    """
+    View for handling verification of user account, once the user signs up,
     a verification Token is set to the users email
     Arguments:
         APIView {[token, uuid]} -- [token is for verifying the user email and
@@ -162,8 +163,6 @@ class UserForgetPasswordView(APIView):
     serializer_class = EmailSerializer
 
     def post(self, request):
-        from authors.apps.core.email_with_celery import SendEmail
-
         serializer = EmailSerializer(data=request.data)
         if serializer.is_valid():
             serialized_email = serializer.data.get("email", None)
@@ -222,7 +221,7 @@ class SocialAuth(CreateAPIView):
 
     permission_classes = (AllowAny,)
     serializer_class = SocialAuthSerializer
-    renderer_classes = (UserJSONRenderer,)
+    # renderer_classes = (UserJSONRenderer,)
 
     def create(self, request, *args, **kwargs):
         """

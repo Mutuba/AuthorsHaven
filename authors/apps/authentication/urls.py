@@ -4,7 +4,6 @@ from .views import (
     LoginAPIView,
     RegistrationAPIView,
     UserRetrieveUpdateAPIView,
-    SocialAuth,
 )
 from . import views
 
@@ -27,5 +26,5 @@ urlpatterns = [
         name="reset_password",
     ),
     path("users/subscription/<uuid>/", views.SubscribeAPIView.as_view()),
-    path("users/social_auth/", SocialAuth.as_view(), name="social_auth"),
+    # path("users/social_auth/", SocialAuth.as_view(), name="social_auth"),
 ]

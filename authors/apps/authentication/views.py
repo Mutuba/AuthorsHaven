@@ -24,7 +24,7 @@ from .serializers import (
     ResetUserPasswordSerializer,
     SubscriptionSerializer,
 )
-from authors.settings import EMAIL_HOST_USER
+from authors.settings import EMAIL_HOST_USER, DEFAULT_FROM_EMAIL
 from authors.apps.core.email_with_celery import SendEmail
 from .chk_token import authcheck_token
 from .renderers import UserJSONRenderer
@@ -72,7 +72,7 @@ class RegistrationAPIView(APIView):
             e_to=[
                 user["email"],
             ],
-            e_from=EMAIL_HOST_USER,
+            e_from=DEFAULT_FROM_EMAIL,
         ).send()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -134,7 +134,8 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
 
 class VerifyAPIView(APIView):
-    """View for handling verification of user account, once the user signs up,
+    """
+    View for handling verification of user account, once the user signs up,
     a verification Token is set to the users email
     Arguments:
         APIView {[token, uuid]} -- [token is for verifying the user email and
@@ -162,8 +163,6 @@ class UserForgetPasswordView(APIView):
     serializer_class = EmailSerializer
 
     def post(self, request):
-        from authors.apps.core.email_with_celery import SendEmail
-
         serializer = EmailSerializer(data=request.data)
         if serializer.is_valid():
             serialized_email = serializer.data.get("email", None)
@@ -214,87 +213,9 @@ class ResetPasswordLinkView(APIView):
             return Response({"message": msg}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class SocialAuth(CreateAPIView):
-    """
-    Allows for social signup and login using Google, Facebook and GitHub
-    """
-
-    permission_classes = (AllowAny,)
-    serializer_class = SocialAuthSerializer
-    renderer_classes = (UserJSONRenderer,)
-
-    def create(self, request, *args, **kwargs):
-        """
-        Receives the access_token and provider from the request,
-        once authentication is comlpete, it creates a new user record
-        if it does exist already. The user's information (username and email)
-        are saved and the user is provided with a JWT token for authorization when
-        using our API.
-        """
-        # Get the access_token and provider from request
-        # the access_token is provided by the particular provider
-        # which in our case is 'google-oauth2', 'facebook', 'github'
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        provider = serializer.data.get("provider")
-
-        access_token = serializer.data.get("access_token")
-        authed_user = request.user if not request.user.is_anonymous else None
-        # strategy sets up the required custom configuration for working with Django
-        strategy = load_strategy(request)
-        try:
-            # Loads backends defined on SOCIAL_AUTH_AUTHENTICATION_BACKENDS,
-            # checks the appropiate one by using the provider given
-            backend = load_backend(strategy=strategy, name=provider, redirect_uri=None)
-            # If auth is oauth1 eg Twitter based do this
-            if isinstance(backend, BaseOAuth1):
-                # Twitter, for example, uses OAuth1 and requires that you also pass
-                # an `oauth_token_secret` with your authentication request
-                access_token = {
-                    "oauth_token": request.data["access_token"],
-                    "oauth_token_secret": request.data["access_token_secret"],
-                }
-            elif isinstance(backend, BaseOAuth2):
-                # We're using oauth's implicit grant type (usually used for web and mobile
-                # applications), so all we have to pass here is an access_token
-                access_token = request.data["access_token"]
-        except MissingBackend:
-            return Response(
-                {"errors": {"provider": ["Invalid provider"]}},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        try:
-            # authenticates the user and
-            # creates a user in our user model if a user with
-            # the given email and username does not exist already.
-            # If the user exists, we just authenticate the user.
-            user = backend.do_auth(access_token, user=authed_user)
-        except BaseException as error:
-            return Response(
-                {
-                    "error": str(error),
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # Since the user is using social authentication, there is no need for email verification.
-        # We therefore set the user to active here.
-
-        if not user.is_active:
-            user.is_active = True
-            user.save()
-
-        serializer = UserSerializer(user)
-        our_token = user.token
-        output = serializer.data
-        output["token"] = our_token
-        return Response(output, status=status.HTTP_200_OK)
-
-
 class SubscribeAPIView(APIView):
-    """Class that will enable user subscribe and unsubscribe from an article.
+    """
+    Class that will enable user subscribe and unsubscribe from an article.
 
     Arguments:
         APIView {[request]} -- [contains all the payload]

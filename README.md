@@ -262,7 +262,7 @@ No additional parameters required
 
 ### List Articles
 
-`GET /api/articles`
+`GET /api/articles/list/`
 
 Returns most recent articles globally by default, provide `tag`, `author` or `favorited` query parameter to filter results
 

@@ -28,7 +28,7 @@ class BaseTest(APITestCase):
             "email": "jake@jake.jake",
         }
 
-        self.no_email = {"eml": "wrongemail.werong"}
+        self.no_email = {"eml": "wrongemail.wrong"}
 
         self.user_cred1 = {
             "user": {

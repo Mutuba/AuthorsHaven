@@ -213,6 +213,7 @@ class ResetPasswordLinkView(APIView):
             return Response({"message": msg}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class SubscribeAPIView(APIView):
     """
     Class that will enable user subscribe and unsubscribe from an article.

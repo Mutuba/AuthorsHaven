@@ -192,7 +192,7 @@ def send_notifications_to_all_users_on_comments(
         if author:
             comment = Comment.objects.get(id=instance.id)
             link = f'{os.getenv("HEROKU_BACKEND_URL")}/api/articles/{comment.article.slug}/comments/{instance.id}'
-            uuid = urlsafe_base64_encode(force_bytes(author.id)).decode("utf-8")
+            uuid = urlsafe_base64_encode(force_bytes(author.id))
             subscription = (
                 f'{os.getenv("HEROKU_BACKEND_URL")}/api/users/subscription/{uuid}/'
             )

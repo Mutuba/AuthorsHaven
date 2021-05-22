@@ -9,6 +9,7 @@ from rest_framework.permissions import (
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 from django.db.models import Avg, Count
 
 from .models import Article, ArticleRating
@@ -36,9 +37,11 @@ class ArticleViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    """By subclassing create, list, retrieve and destroy
+    """
+    By subclassing create, list, retrieve and destroy
     we can define create, list, retrieve and destroy
-    endpoints in one class"""
+    endpoints in one class
+    """
 
     lookup_field = "slug"
     queryset = Article.objects.all()
@@ -84,12 +87,14 @@ class ArticleViewSet(
 
         return self.get_paginated_response(serializer.data)
 
-    def retrieve(self, request, slug):
+    def retrieve(self, request, slug=None):
 
-        """Method returns a single article
+        """
+        Method returns a single article
         Takes a slug as unique identifier, searches the db
         and returns an article with matching slug.
-        Returns NotFound if an article does not exist"""
+        Returns NotFound if an article does not exist
+        """
 
         serializer_context = {"request": request}
 
@@ -259,47 +264,45 @@ class DisLikeAPIView(UpdateAPIView):
             )
 
 
+class ArticleFilter(filters.FilterSet):
+    author = filters.CharFilter(method="filter_article_author")
 
-class ArticleFilter(filters.FilterSet):    
-    author = filters.CharFilter(method= 'filter_article_author')
-    
-    title = filters.CharFilter(method='filter_article_title')
-    
-    description = filters.CharFilter(method='filter_article_description')
-    
-    body = filters.CharFilter(method='filter_article_body')
-    
-    tags = filters.CharFilter(method='filter_article_tags')
+    title = filters.CharFilter(method="filter_article_title")
+
+    description = filters.CharFilter(method="filter_article_description")
+
+    body = filters.CharFilter(method="filter_article_body")
+
+    tags = filters.CharFilter(method="filter_article_tags")
 
     class Meta:
         model = Article
-        fields = ['author', 'title', 'description', 'body', 'tags']      
-    
-    def filter_article_title(self, queryset, name,  value):
+        fields = ["author", "title", "description", "body", "tags"]
+
+    def filter_article_title(self, queryset, name, value):
         return queryset.filter(title__icontains=value)
-    
-    
-    def filter_article_description(self, queryset, name,  value):
+
+    def filter_article_description(self, queryset, name, value):
         return queryset.filter(description__icontains=value)
-    
-    def filter_article_body(self, queryset, name,  value):
+
+    def filter_article_body(self, queryset, name, value):
         return queryset.filter(body__icontains=value)
-    
-    
+
     def filter_article_author(self, queryset, name, value):
-        
+
         return queryset.filter(author__username__icontains=value)
-                
+
     def filter_article_tag(self, queryset, name, value):
         return queryset.filter(product__slug__icontains=value)
-    
+
     def filter_article_tags(self, queryset, name, value):
         return queryset.filter(tagList__contains=[value])
+
 
 class ArticleSearchList(generics.ListAPIView):
     """
     Implements class to enable searching and filtering
-    
+
     """
 
     permission_classes = (IsAuthenticatedOrReadOnly,)
@@ -474,6 +477,7 @@ class LikeComment(APIView):
     def put(self, request, **kwargs):
         """
         update like field in comment model
+
         """
         slug = self.kwargs["slug"]
         pk = self.kwargs["pk"]
@@ -512,15 +516,17 @@ class DislikeComment(APIView):
     def put(self, request, **kwargs):
         """
         update dislike field in comment model
+
         """
         slug = self.kwargs["slug"]
         pk = self.kwargs["pk"]
+
         try:
             article = Article.objects.get(slug=slug)
         except Article.DoesNotExist:
-
             raise NotFound("An article with this slug does not exist.")
         try:
+
             comment = Comment.objects.get(pk=pk)
         except Comment.DoesNotExist:
             raise NotFound("A comment with this ID does not exist.")

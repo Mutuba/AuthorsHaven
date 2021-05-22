@@ -6,27 +6,26 @@
 # class BookmarkArticleTestCase(ArticleTestCase):
 #     """Tests Bookmark articles views"""
 
-#     article = {
-#         "article": {
-#             "title": "How to train your dragon",
-#             "description": "Ever wonder how?",
-#             "body": "It takes a Jacobian",
-#             "tagList": ["dragons", "training"],
-#         }
-#     }
-
 #     def test_if_user_can_bookmark_without_authentication(self):
 #         """Test if user can bookmark article without authentication"""
+
+#         response = self.client.post(self.SIGN_UP_URL, self.user_cred, format="json")
+#         response = self.client.post(
+#             reverse("authentication:user_login"), self.user_cred, format="json"
+#         )
+#         token = response.data["token"]
+
+#         self.create_article(token, self.testArticle)
 #         # Bookmark an article
 #         response = self.client.put(
-#             path="/api/articles/how-to-train-your-dragon/bookmark/"
+#             path="/api/articles/how-to-feed-your-dragon/bookmark"
 #         )
 #         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 #         self.assertEqual(
 #             response.data["detail"], "Authentication credentials were not provided."
 #         )
 
-#     def test_if_user_can_bookmark_unexisting_article(self):
+#     def test_if_user_can_bookmark_nonexisting_article(self):
 #         """Test if the user can bookmark an article that does not exist"""
 #         # Register user
 #         self.register_user()
@@ -38,7 +37,7 @@
 #         token = res.data["token"]
 #         # Bookmark an article
 #         response = self.client.put(
-#             path="/api/articles/how-to-train-your-dragon/bookmark/",
+#             path="/api/articles/how-to-feed-your-dragon/bookmark/",
 #             HTTP_AUTHORIZATION="Bearer " + token,
 #         )
 #         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -54,11 +53,10 @@
 #         # Create token
 #         token = res.data["token"]
 #         # Create article
-#         response = self.create_article(token, self.article)
-#         self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+#         response = self.create_article(token, self.testArticle)
 #         # Bookmark an article
 #         response = self.client.put(
-#             path="/api/articles/how-to-train-your-dragon/bookmark/",
+#             path="/api/articles/how-to-feed-your-dragon/bookmark",
 #             HTTP_AUTHORIZATION="Bearer " + token,
 #         )
 #         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -74,17 +72,16 @@
 #         # Create token
 #         token = res.data["token"]
 #         # Create article
-#         response = self.create_article(token, self.article)
-#         self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+#         response = self.create_article(token, self.testArticle)
 #         # Bookmark an article
 #         response = self.client.put(
-#             path="/api/articles/how-to-train-your-dragon/bookmark/",
+#             path="/api/articles/how-to-feed-your-dragon/bookmark",
 #             HTTP_AUTHORIZATION="Bearer " + token,
 #         )
 #         self.assertEqual(response.status_code, status.HTTP_200_OK)
 #         # Remove bookmark from an article
 #         response = self.client.put(
-#             path="/api/articles/how-to-train-your-dragon/bookmark/",
+#             path="/api/articles/how-to-feed-your-dragon/bookmark",
 #             HTTP_AUTHORIZATION="Bearer " + token,
 #         )
 #         self.assertEqual(response.status_code, status.HTTP_200_OK)

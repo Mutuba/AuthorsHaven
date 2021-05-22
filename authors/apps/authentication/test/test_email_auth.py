@@ -30,8 +30,7 @@ class EmailAuthenticationTestCase(BaseTest):
     #         reverse("authentication:verify", args=[uid, token])
     #     )
     #     verify_account = VerifyAPIView.as_view()
-        
-        
+
     #     response = verify_account(request, uidb64=uid, token=token)
     #     self.assertTrue(response.status_code, 200)
     #     user = User.objects.get()

@@ -78,6 +78,7 @@ class BaseTest(APITestCase):
                 "title": "How to feed your dragon",
                 "description": "Wanna know how?",
                 "body": "You don't believe?",
+                "tagList": ["dragons", "training"],
             }
         }
 
@@ -110,3 +111,86 @@ class BaseTest(APITestCase):
 
     def login_user_2(self):
         return self.client.post(self.LOG_IN_URL, self.user_cred2, format="json")
+
+    def get_token(self):
+        response = self.client.post(self.SIGN_UP_URL, self.user_cred, format="json")
+        response = self.client.post(
+            reverse("authentication:user_login"), self.user_cred, format="json"
+        )
+        token = response.data["token"]
+        return token
+
+    def get_user2_token(self):
+        response = self.client.post(self.SIGN_UP_URL, self.user_cred2, format="json")
+        response = self.client.post(
+            reverse("authentication:user_login"), self.user_cred2, format="json"
+        )
+        token = response.data["token"]
+        return token
+
+    def create_article(self, token, article):
+        """
+        Helper method to creates an article
+        """
+        return self.client.post(
+            "/api/articles/",
+            article,
+            HTTP_AUTHORIZATION="Bearer " + token,
+            format="json",
+        )
+
+    def update_article(self, token, slug, article):
+        """Helper method to update an article"""
+        return self.client.put(
+            "/api/articles/" + slug + "/update",
+            article,
+            HTTP_AUTHORIZATION="Bearer " + token,
+            format="json",
+        )
+
+    def delete_article(self, token, slug):
+        """Helper method to delete an article"""
+
+        return self.client.delete(
+            "/api/articles/" + slug + "/delete",
+            HTTP_AUTHORIZATION="Bearer " + token,
+        )
+
+    def favorite_article(self, token, slug):
+        """
+        Helper method to favorite an article
+        """
+        return self.client.post(
+            "/api/articles/" + slug + "/favorite", HTTP_AUTHORIZATION="Bearer " + token
+        )
+
+    def unfavorite_article(self, token, slug):
+        """
+        Helper method to favorite an article
+        """
+        return self.client.delete(
+            "/api/articles/" + slug + "/favorite", HTTP_AUTHORIZATION="Bearer " + token
+        )
+
+    def get_articles(self, token):
+        """
+        Helper method to get all articles after authentication
+
+        """
+        return self.client.get(
+            "/api/articles/list", HTTP_AUTHORIZATION="Bearer " + token
+        )
+
+    def create_comment(self, comment):
+        """
+        Helper method to creates an article
+
+        """
+
+        token = self.get_token()
+        return self.client.post(
+            "/api/articles/how-to-feed-your-dragon/comments",
+            comment,
+            HTTP_AUTHORIZATION="Bearer " + token,
+            format="json",
+        )

@@ -1,6 +1,7 @@
 from rest_framework.test import APIClient, APITestCase
 from django.urls import reverse
 from django.conf import settings
+from authors.apps.authentication.models import User
 
 
 class BaseTest(APITestCase):
@@ -194,3 +195,16 @@ class BaseTest(APITestCase):
             HTTP_AUTHORIZATION="Bearer " + token,
             format="json",
         )
+
+    def login_admin(self):
+        User.objects.create_superuser(
+            username="Teddy",
+            email="teddykavooh@gmail.com",
+            password="HelloWorldKen12!3",
+        )
+
+        data = {
+            "user": {"email": "teddykavooh@gmail.com", "password": "HelloWorldKen12!3"}
+        }
+
+        return self.client.post(path="/api/users/login/", data=data, format="json")

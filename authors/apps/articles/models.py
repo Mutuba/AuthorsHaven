@@ -112,6 +112,7 @@ class Comment(TimestampedModel):
 class ArticleRating(models.Model):
     """
     Defines the ratings fields for a rater
+
     """
 
     rater = models.ForeignKey(
@@ -139,7 +140,9 @@ class Report(TimestampedModel):
 
 
 @receiver(post_save, sender=Article)
-def send_notifications_to_all_users(sender, instance, created, *args, **kwargs):
+def send_email_notifications_to_article_followers(
+    sender, instance, created, *args, **kwargs
+):
     """Create a Signal that sends email to all users that follow the author.
 
     Arguments:
@@ -148,12 +151,21 @@ def send_notifications_to_all_users(sender, instance, created, *args, **kwargs):
     """
 
     if instance and created:
-        users_following = instance.author.profile.get_followers(instance.author.profile)
-        users_follow = [u.user for u in users_following if u.get_notifications]
+        # article author's followers
+        author_followers = instance.author.profile.get_followers()
+        # get users who have subscribed to receive email notifications
+        author_followers_with_subscription = [
+            u.user for u in author_followers if u.user.subscribed
+        ]
+        # a link to the article
         link = f'{os.getenv("HEROKU_BACKEND_URL")}/api/articles/{instance.slug}'
-        users_foll = [u.user.id for u in users_following]
-        if users_foll:
-            uuid = urlsafe_base64_encode(force_bytes(users_foll[0])).decode("utf-8")
+
+        for author_follower_with_subscription in author_followers_with_subscription:
+
+            uuid = urlsafe_base64_encode(
+                force_bytes(author_follower_with_subscription.id)
+            )
+            # a link for the user to unsubscribe
             subscription = (
                 f'{os.getenv("HEROKU_BACKEND_URL")}/api/users/subscription/{uuid}/'
             )
@@ -166,7 +178,7 @@ def send_notifications_to_all_users(sender, instance, created, *args, **kwargs):
                     "subscription": subscription,
                 },
                 subject="New Article",
-                e_to=[u.email for u in users_follow],
+                e_to=author_follower_with_subscription.email,
             ).send()
 
 
@@ -182,17 +194,17 @@ def send_notifications_to_all_users_on_comments(
     """
 
     if instance and created:
-        user_following = Profile.objects.all()
-        user_follow = [
+        profiles = Profile.objects.all()
+        article_liking_users = [
             u.user
-            for u in user_following
-            if u.has_favorited(instance.article) and u.get_notifications
+            for u in profiles
+            if u.has_favorited(instance.article) and u.user.subscribed
         ]
-        author = User.objects.get(email=instance.author)
-        if author:
+
+        for article_liking_user in article_liking_users:
             comment = Comment.objects.get(id=instance.id)
             link = f'{os.getenv("HEROKU_BACKEND_URL")}/api/articles/{comment.article.slug}/comments/{instance.id}'
-            uuid = urlsafe_base64_encode(force_bytes(author.id))
+            uuid = urlsafe_base64_encode(force_bytes(article_liking_user.id))
             subscription = (
                 f'{os.getenv("HEROKU_BACKEND_URL")}/api/users/subscription/{uuid}/'
             )
@@ -205,5 +217,5 @@ def send_notifications_to_all_users_on_comments(
                     "subscription": subscription,
                 },
                 subject=" New Comment.",
-                e_to=[u.email for u in user_follow],
+                e_to=article_liking_user.email,
             ).send()

@@ -65,13 +65,12 @@ class ArticleSerializer(serializers.ModelSerializer):
 
         author = self.context.get("author", None)
         user = author.profile
-        followers = user.get_followers(user)
+        followers = user.get_followers()
         recipients = [
             follower.user for follower in followers if follower.get_notifications
         ]
 
         article = Article.objects.create(**validated_data)
-
         notify.send(
             author,
             recipient=recipients,

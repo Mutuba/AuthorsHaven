@@ -14,6 +14,7 @@ from .renderers import NotificationJSONRenderer
 class NotificationViewList(APIView):
     """
     get all notifications where the receiver was the current user
+
     """
 
     permission_classes = (IsAuthenticated,)

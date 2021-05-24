@@ -26,6 +26,7 @@ app_name = "articles"
 urlpatterns = [
     path("", ArticleViewSet.as_view({"post": "create"}), name="create_article"),
     path("list", ArticleViewSet.as_view({"get": "list"}), name="fetch_articles"),
+    path("search", ArticleSearchList.as_view(), name="search"),
     path(
         "<slug:slug>",
         ArticleViewSet.as_view({"get": "retrieve"}),
@@ -48,7 +49,6 @@ urlpatterns = [
         BookmarkAPIView.as_view(),
         name="bookmark_article",
     ),
-    path("search", ArticleSearchList.as_view(), name="search"),
     path("<slug:article_slug>/favorite", ArticlesFavoriteAPIView.as_view()),
     path(
         "<slug:slug>/comments",
@@ -58,7 +58,7 @@ urlpatterns = [
     path("<slug:slug>/comments/<int:pk>", CommentRetrieveUpdateDestroy.as_view()),
     path("<slug:slug>/comments/<int:pk>/like", LikeComment.as_view()),
     path("<slug:slug>/comments/<int:pk>/dislike", DislikeComment.as_view()),
-    path("<slug:slug>/rate/", RateArticlesAPIView.as_view()),
+    path("<slug:slug>/rate", RateArticlesAPIView.as_view()),
     path("<slug:slug>/report", ReportCreateAPIView.as_view()),
     path("<slug:slug>/reports", ReportListAPIView.as_view()),
 ]

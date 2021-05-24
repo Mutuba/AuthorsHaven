@@ -50,11 +50,6 @@ class ArticleViewSet(
     serializer_class = ArticleSerializer
     pagination_class = LimitOffsetPagination
 
-    # def get_queryset(self):
-    #     queryset = self.queryset
-
-    #     return queryset
-    # get_queryset not necessary as queryset has been set in the class
     def create(self, request):
 
         """Creates a new article in the database
@@ -275,9 +270,11 @@ class ArticleFilter(filters.FilterSet):
 
     tags = filters.CharFilter(method="filter_article_tags")
 
+    slug = filters.CharFilter(method="filter_article_slug")
+
     class Meta:
         model = Article
-        fields = ["author", "title", "description", "body", "tags"]
+        fields = ["author", "title", "description", "body", "tags", "slug"]
 
     def filter_article_title(self, queryset, name, value):
         return queryset.filter(title__icontains=value)
@@ -292,11 +289,11 @@ class ArticleFilter(filters.FilterSet):
 
         return queryset.filter(author__username__icontains=value)
 
-    def filter_article_tag(self, queryset, name, value):
-        return queryset.filter(product__slug__icontains=value)
-
     def filter_article_tags(self, queryset, name, value):
         return queryset.filter(tagList__contains=[value])
+
+    def filter_article_slug(self, queryset, name, value):
+        return queryset.filter(product__slug__icontains=value)
 
 
 class ArticleSearchList(generics.ListAPIView):
@@ -309,6 +306,9 @@ class ArticleSearchList(generics.ListAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     filterset_class = ArticleFilter
+
+    renderer_classes = (ArticleJSONRenderer,)
+    pagination_class = LimitOffsetPagination
 
 
 class ArticlesFavoriteAPIView(APIView):

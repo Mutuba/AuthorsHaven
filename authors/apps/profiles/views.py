@@ -52,12 +52,13 @@ class ProfileFollowAPIView(APIView):
     serializer_class = ProfileSerializer
 
     def put(self, request, username=None):
+        # person who wants to follow someone (wants to become a follower)
         follower = self.request.user.profile
         try:
+            # the person to be followed
             followee = Profile.objects.get(user__username=username)
         except Profile.DoesNotExist:
             raise ProfileDoesNotExist
-
         if follower.pk is followee.pk:
             raise serializers.ValidationError("You can not follow yourself.")
 
@@ -76,13 +77,13 @@ class FollowersAPIView(APIView):
     serializer_class = ProfileSerializer
 
     def get(self, request, username):
-        user = self.request.user.profile
         try:
+            # profile object connected to username in params
             profile = Profile.objects.get(user__username=username)
         except Profile.DoesNotExist:
             raise ProfileDoesNotExist
 
-        followers = user.get_followers(profile)
+        followers = profile.get_followers()
         serializer = self.serializer_class(
             followers, many=True, context={"request": request}
         )
@@ -104,7 +105,7 @@ class FollowingAPIView(APIView):
         except Profile.DoesNotExist:
             raise ProfileDoesNotExist
 
-        following = user.get_following(profile)
+        following = user.get_following()
         serializer = self.serializer_class(
             following, many=True, context={"request": request}
         )

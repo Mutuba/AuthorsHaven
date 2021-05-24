@@ -18,7 +18,7 @@ urlpatterns = [
     path(
         "users/forgot_password/",
         views.UserForgetPasswordView.as_view(),
-        name="forgot_pass",
+        name="forgot_password",
     ),
     path(
         "users/reset_password/<token>/",
@@ -26,5 +26,4 @@ urlpatterns = [
         name="reset_password",
     ),
     path("users/subscription/<uuid>/", views.SubscribeAPIView.as_view()),
-    # path("users/social_auth/", SocialAuth.as_view(), name="social_auth"),
 ]

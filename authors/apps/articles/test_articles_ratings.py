@@ -1,211 +1,142 @@
-# from ..base_test import BaseTest
-# from django.urls import reverse
-# from rest_framework.views import status
-# import json
+from ..base_test import BaseTest
+from django.urls import reverse
+from rest_framework.views import status
+import json
 
 
-# class ArticleTestCase(BaseTest):
-#     """
-#     Class implements tests for artcles
-#     """
+class ArticleTestCase(BaseTest):
+    """
+    Class implements tests for artcles
+    """
 
-#     def create_article(self, token, article):
-#         """
-#         Helper method to creates an article
-#         """
-#         return self.client.post(
-#             "/api/articles",
-#             article,
-#             HTTP_AUTHORIZATION="Bearer " + token,
-#             format="json",
-#         )
+    def rate_article(self, token, slug, rate):
+        """
+        Helper method to creates an article
+        """
+        return self.client.post(
+            "/api/articles/" + slug + "/rate",
+            rate,
+            HTTP_AUTHORIZATION="Bearer " + token,
+            format="json",
+        )
 
-#     def rate_article(self, token, slug, rate):
-#         """
-#         Helper method to creates an article
-#         """
-#         return self.client.post(
-#             "/api/articles/" + slug + "/rate/",
-#             rate,
-#             HTTP_AUTHORIZATION="Bearer " + token,
-#             format="json",
-#         )
+    def test_cannot_rate_own_article(self):
+        """
+        Test an article can be searched by title
+        and returned successfully
 
-#     def test_cannot_rate_own_article(self):
-#         """
-#         Test an article can be searched by title
-#         and returned successfully
+        """
 
-#         """
+        self.client.post(self.SIGN_UP_URL, self.user_cred, format="json")
+        login_response = self.client.post(
+            reverse("authentication:user_login"), self.user_cred, format="json"
+        )
+        token = login_response.data["token"]
 
-#         response = self.client.post(self.SIGN_UP_URL, self.user_cred, format="json")
-#         response = self.client.post(
-#             reverse("authentication:user_login"), self.user_cred, format="json"
-#         )
-#         token = response.data["token"]
+        response = self.create_article(token, self.testArticle)
+        slug = response.data["slug"]
+        rate = {"rate": {"rating": 5}}
+        response = self.rate_article(token, slug, rate)
+        self.assertEquals(status.HTTP_401_UNAUTHORIZED, response.status_code)
 
-#         article = {
-#             "article": {
-#                 "title": "How to feed your dragon",
-#                 "description": "Wanna know how?",
-#                 "body": "You don't believe?",
-#             }
-#         }
+    def test_can_rate_article_successfully(self):
+        """
+        Tests whether a user can rate an article successfully
+        """
 
-#         response = self.create_article(token, article)
-#         slug = "how-to-feed-your-dragon"
-#         rate = {"rate": {"rating": 5}}
-#         response = self.rate_article(token, slug, rate)
-#         self.assertEquals(status.HTTP_401_UNAUTHORIZED, response.status_code)
+        self.client.post(self.SIGN_UP_URL, self.user_cred, format="json")
+        login_response = self.client.post(
+            reverse("authentication:user_login"), self.user_cred, format="json"
+        )
+        token = login_response.data["token"]
 
-#     def test_can_rate_article_successfully(self):
-#         """Tests whether a user can delete an article when not author
-#         Method registers a user, logs in the user,
-#         creates an article, then updates the article
-#         """
+        response = self.create_article(token, self.testArticle)
 
-#         response = self.client.post(self.SIGN_UP_URL, self.user_cred, format="json")
-#         response = self.client.post(
-#             reverse("authentication:user_login"), self.user_cred, format="json"
-#         )
-#         token = response.data["token"]
+        slug = response.data["slug"]
+        response = self.client.post(self.SIGN_UP_URL, self.user_cred1, format="json")
 
-#         article = {
-#             "article": {
-#                 "title": "How to feed your dragon",
-#                 "description": "Wanna know how?",
-#                 "body": "You don't believe?",
-#             }
-#         }
+        rater_login_response = self.client.post(
+            reverse("authentication:user_login"), self.user_cred1, format="json"
+        )
 
-#         response = self.create_article(token, article)
-#         # Asserr true that an article has been created
-#         self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        rater_token = rater_login_response.data["token"]
 
-#         response = self.client.post(self.SIGN_UP_URL, self.user_cred1, format="json")
-#         response = self.client.post(
-#             reverse("authentication:user_login"), self.user_cred1, format="json"
-#         )
+        rate = {"rate": {"rating": 5, "note": "I loved the dragons story"}}
 
-#         token = response.data["token"]
-#         # Delete the article created by another user.
-#         # Expects to throw a 404 error
-#         slug = "how-to-feed-your-dragon"
-#         rate = {"rate": {"rating": 5, "note": "I loved the dragons story"}}
+        response = self.rate_article(rater_token, slug, rate)
+        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
 
-#         response = self.rate_article(token, slug, rate)
-#         self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+    def test_cannot_rate_article_with_non_integer_value(self):
+        """
+        Tests whether a user can rate an article with non integer rate value
+        """
 
-#     def test_can_rate_article_not_integer(self):
-#         """Tests whether a user can delete an article when not author
-#         Method registers a user, logs in the user,
-#         creates an article, then updates the article
-#         """
+        self.client.post(self.SIGN_UP_URL, self.user_cred, format="json")
+        login_response = self.client.post(
+            reverse("authentication:user_login"), self.user_cred, format="json"
+        )
+        author_token = login_response.data["token"]
 
-#         response = self.client.post(self.SIGN_UP_URL, self.user_cred, format="json")
-#         response = self.client.post(
-#             reverse("authentication:user_login"), self.user_cred, format="json"
-#         )
-#         token = response.data["token"]
+        response = self.create_article(author_token, self.testArticle)
+        slug = response.data["slug"]
 
-#         article = {
-#             "article": {
-#                 "title": "How to feed your dragon",
-#                 "description": "Wanna know how?",
-#                 "body": "You don't believe?",
-#             }
-#         }
+        self.client.post(self.SIGN_UP_URL, self.user_cred1, format="json")
+        rater_login_response = self.client.post(
+            reverse("authentication:user_login"), self.user_cred1, format="json"
+        )
 
-#         response = self.create_article(token, article)
-#         # Asserr true that an article has been created
-#         self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        rater_token = rater_login_response.data["token"]
 
-#         response = self.client.post(self.SIGN_UP_URL, self.user_cred1, format="json")
-#         response = self.client.post(
-#             reverse("authentication:user_login"), self.user_cred1, format="json"
-#         )
+        rate = {"rate": {"rating": "5", "note": "I loved the dragons story"}}
 
-#         token = response.data["token"]
-#         # Delete the article created by another user.
-#         # Expects to throw a 404 error
-#         slug = "how-to-feed-your-dragon"
-#         rate = {"rate": {"rating": "5", "note": "I loved the dragons story"}}
+        response = self.rate_article(rater_token, slug, rate)
+        self.assertEquals(status.HTTP_401_UNAUTHORIZED, response.status_code)
 
-#         response = self.rate_article(token, slug, rate)
-#         self.assertEquals(status.HTTP_401_UNAUTHORIZED, response.status_code)
+    def test_can_rate_article_rate_value_greater_than_5(self):
+        """
+        Tests whether a user can rate an article with a value greater than 5
+        """
 
-#     def test_can_rate_article_rate_value_greater_than_5(self):
-#         """Tests whether a user can delete an article when not author
-#         Method registers a user, logs in the user,
-#         creates an article, then updates the article
-#         """
+        self.client.post(self.SIGN_UP_URL, self.user_cred, format="json")
+        login_response = self.client.post(
+            reverse("authentication:user_login"), self.user_cred, format="json"
+        )
+        author_token = login_response.data["token"]
 
-#         response = self.client.post(self.SIGN_UP_URL, self.user_cred, format="json")
-#         response = self.client.post(
-#             reverse("authentication:user_login"), self.user_cred, format="json"
-#         )
-#         token = response.data["token"]
+        response = self.create_article(author_token, self.testArticle)
+        slug = response.data["slug"]
 
-#         article = {
-#             "article": {
-#                 "title": "How to feed your dragon",
-#                 "description": "Wanna know how?",
-#                 "body": "You don't believe?",
-#             }
-#         }
+        self.client.post(self.SIGN_UP_URL, self.user_cred1, format="json")
+        rater_login_response = self.client.post(
+            reverse("authentication:user_login"), self.user_cred1, format="json"
+        )
 
-#         response = self.create_article(token, article)
-#         # Asserr true that an article has been created
-#         self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        rater_token = rater_login_response.data["token"]
+        rate = {"rate": {"rating": 6, "note": "I loved the dragons story"}}
 
-#         response = self.client.post(self.SIGN_UP_URL, self.user_cred1, format="json")
-#         response = self.client.post(
-#             reverse("authentication:user_login"), self.user_cred1, format="json"
-#         )
+        response = self.rate_article(rater_token, slug, rate)
+        self.assertEquals(status.HTTP_401_UNAUTHORIZED, response.status_code)
 
-#         token = response.data["token"]
-#         # Delete the article created by another user.
-#         # Expects to throw a 404 error
-#         slug = "how-to-feed-your-dragon"
-#         rate = {"rate": {"rating": 6, "note": "I loved the dragons story"}}
+    def test_can_rate_article_rate_value_less_than_1(self):
+        """Tests whether a user can rate an article with a value less than 1"""
 
-#         response = self.rate_article(token, slug, rate)
-#         self.assertEquals(status.HTTP_401_UNAUTHORIZED, response.status_code)
+        self.client.post(self.SIGN_UP_URL, self.user_cred, format="json")
+        login_response = self.client.post(
+            reverse("authentication:user_login"), self.user_cred, format="json"
+        )
+        author_token = login_response.data["token"]
+        response = self.create_article(author_token, self.testArticle)
 
-#     def test_can_rate_article_rate_value_less_than_1(self):
-#         """Tests whether a user can delete an article when not author
-#         Method registers a user, logs in the user,
-#         creates an article, then updates the article
-#         """
+        slug = response.data["slug"]
 
-#         response = self.client.post(self.SIGN_UP_URL, self.user_cred, format="json")
-#         response = self.client.post(
-#             reverse("authentication:user_login"), self.user_cred, format="json"
-#         )
-#         token = response.data["token"]
+        self.client.post(self.SIGN_UP_URL, self.user_cred1, format="json")
+        rater_login_response = self.client.post(
+            reverse("authentication:user_login"), self.user_cred1, format="json"
+        )
 
-#         article = {
-#             "article": {
-#                 "title": "How to feed your dragon",
-#                 "description": "Wanna know how?",
-#                 "body": "You don't believe?",
-#             }
-#         }
+        rater_token = rater_login_response.data["token"]
 
-#         response = self.create_article(token, article)
-#         # Asserr true that an article has been created
-#         self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+        rate = {"rate": {"rating": 0, "note": "I loved the dragons story"}}
 
-#         response = self.client.post(self.SIGN_UP_URL, self.user_cred1, format="json")
-#         response = self.client.post(
-#             reverse("authentication:user_login"), self.user_cred1, format="json"
-#         )
-
-#         token = response.data["token"]
-#         # Delete the article created by another user.
-#         # Expects to throw a 404 error
-#         slug = "how-to-feed-your-dragon"
-#         rate = {"rate": {"rating": 0, "note": "I loved the dragons story"}}
-
-#         response = self.rate_article(token, slug, rate)
-#         self.assertEquals(status.HTTP_401_UNAUTHORIZED, response.status_code)
+        response = self.rate_article(rater_token, slug, rate)
+        self.assertEquals(status.HTTP_401_UNAUTHORIZED, response.status_code)

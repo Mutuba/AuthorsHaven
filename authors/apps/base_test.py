@@ -15,82 +15,80 @@ class BaseTest(APITestCase):
         self.LOG_IN_URL = "/api/users/login/"
         self.RESET_PASS = "/api/users/forgot_password/"
 
-        self.user_cred = {
-            "user": {
-                "email": "jake@jake.jake",
-                "username": "jake",
-                "password": "J!ake123456",
-            }
-        }
-
-        self.wrong_email = {"email": "wrongemail.werong"}
-
-        self.correct_email = {
+    user_cred = {
+        "user": {
             "email": "jake@jake.jake",
+            "username": "jake",
+            "password": "J!ake123456",
         }
+    }
 
-        self.no_email = {"eml": "wrongemail.wrong"}
+    wrong_email = {"email": "wrongemail.werong"}
 
-        self.user_cred1 = {
-            "user": {
-                "email": "jake@jakerr.jake",
-                "username": "jakerrrrrr",
-                "password": "J!ake123456",
-            }
-        }
+    correct_email = {
+        "email": "jake@jake.jake",
+    }
 
-        self.user_cred2 = {
-            "user": {
-                "email": "jake123@jakerr.jake",
-                "username": "jakerrrrrrrrr",
-                "password": "J!ake123456",
-            }
-        }
-        self.user_cred3 = {
-            "user": {
-                "email": "jakejakejake@gmail.com",
-                "username": "jayajaya",
-                "password": "J!ake123456",
-            }
-        }
+    no_email = {"eml": "wrongemail.wrong"}
 
-        self.user_cred_wrong_pass = {
-            "user": {
-                "email": "jake@jake.jake",
-                "username": "jake",
-                "password": "some_fake_password",
-            }
+    user_cred1 = {
+        "user": {
+            "email": "jake@jakerr.jake",
+            "username": "jakerrrrrr",
+            "password": "J!ake123456",
         }
+    }
 
-        self.user_cred_no_email = {
-            "user": {"email": "", "username": "jake", "password": "HelloWorldKen123"}
+    user_cred2 = {
+        "user": {
+            "email": "jake123@jakerr.jake",
+            "username": "jakerrrrrrrrr",
+            "password": "J!ake123456",
         }
+    }
+    user_cred3 = {
+        "user": {
+            "email": "jakejakejake@gmail.com",
+            "username": "jayajaya",
+            "password": "J!ake123456",
+        }
+    }
 
-        self.user_cred_no_username = {
-            "user": {"email": "", "username": "", "password": "HelloWorldKen123"}
+    user_cred_wrong_pass = {
+        "user": {
+            "email": "jake@jake.jake",
+            "username": "jake",
+            "password": "some_fake_password",
         }
+    }
 
-        self.user_cred_no_details = {
-            "user": {"email": "", "username": "", "password": ""}
-        }
+    user_cred_no_email = {
+        "user": {"email": "", "username": "jake", "password": "HelloWorldKen123"}
+    }
 
-        self.testArticle = {
-            "article": {
-                "title": "How to feed your dragon",
-                "description": "Wanna know how?",
-                "body": "You don't believe?",
-                "tagList": ["dragons", "training"],
-            }
-        }
+    user_cred_no_username = {
+        "user": {"email": "", "username": "", "password": "HelloWorldKen123"}
+    }
 
-        self.testArticle1 = {
-            "article": {
-                "title": "How to train your dragon",
-                "description": "Ever wonder how?",
-                "body": "You have to believe",
-            }
+    user_cred_no_details = {"user": {"email": "", "username": "", "password": ""}}
+
+    testArticle = {
+        "article": {
+            "title": "How to feed your dragon",
+            "description": "Wanna know how?",
+            "body": "You don't believe?",
+            "tagList": ["dragons", "training"],
         }
-        self.user_cred_bio = {"user": {"bio": "I love testing"}}
+    }
+
+    testArticle1 = {
+        "article": {
+            "title": "How to train your dragon",
+            "description": "Ever wonder how?",
+            "body": "You have to believe",
+        }
+    }
+    user_cred_bio = {"user": {"bio": "I love testing"}}
 
     def register_user(self):
         return self.client.post(self.SIGN_UP_URL, self.user_cred, format="json")
@@ -208,3 +206,76 @@ class BaseTest(APITestCase):
         }
 
         return self.client.post(path="/api/users/login/", data=data, format="json")
+
+    mutuba = {
+        "user": {
+            "email": "danielmutuba@gmail.com",
+            "username": "Mutuba",
+            "password": "J!ake123456",
+        }
+    }
+    jason = {
+        "user": {
+            "email": "jason@gmail.com",
+            "username": "Jason",
+            "password": "J!ake123456",
+        }
+    }
+    mercy = {
+        "user": {
+            "email": "mercy@gmail.com",
+            "username": "Mercy",
+            "password": "J!ake123456",
+        }
+    }
+    loice = {
+        "user": {
+            "email": "Loice@gmail.com",
+            "username": "Loice",
+            "password": "J!ake123456",
+        }
+    }
+
+    def get_mutuba_token(self):
+        """
+        returns token to be used in tests
+        """
+        response = self.client.post(self.SIGN_UP_URL, self.mutuba, format="json")
+        response = self.client.post(
+            reverse("authentication:user_login"), self.mutuba, format="json"
+        )
+        token = response.data["token"]
+        return token
+
+    def get_jason_token(self):
+        """
+        Returns token for 2nd user to be used in tests
+        """
+        response = self.client.post(self.SIGN_UP_URL, self.jason, format="json")
+        response = self.client.post(
+            reverse("authentication:user_login"), self.jason, format="json"
+        )
+        token = response.data["token"]
+        return token
+
+    def get_mercy_token(self):
+        """
+        Returns token for 3rd user to be used in tests
+        """
+        response = self.client.post(self.SIGN_UP_URL, self.mercy, format="json")
+        response = self.client.post(
+            reverse("authentication:user_login"), self.mercy, format="json"
+        )
+        token = response.data["token"]
+        return token
+
+    def get_loice_token(self):
+        """
+        Returns token for 4th user to be used in tests
+        """
+        response = self.client.post(self.SIGN_UP_URL, self.loice, format="json")
+        response = self.client.post(
+            reverse("authentication:user_login"), self.loice, format="json"
+        )
+        token = response.data["token"]
+        return token

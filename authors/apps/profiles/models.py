@@ -9,6 +9,7 @@ class Profile(TimestampedModel):
     # A user will only have one related Profile model
     user = models.OneToOneField("authentication.User", on_delete=models.CASCADE)
     # Many-To-Many relationship where both sides of the same model (Profile)
+    # A follows B and C then a.follows = [B,C] then for either C or B b.followed_by = [A]
     follows = models.ManyToManyField(
         "self", related_name="followed_by", symmetrical=False
     )
@@ -53,10 +54,10 @@ class Profile(TimestampedModel):
         """Returns True if profile is following us"""
         return self.followed_by.filter(pk=profile.pk).exists()
 
-    def get_followers(self, profile):
+    def get_followers(self):
         """Returns all users following us"""
-        return profile.followed_by.all()
+        return self.followed_by.all()
 
-    def get_following(self, profile):
+    def get_following(self):
         """Returns all users we are following"""
-        return profile.follows.all()
+        return self.follows.all()

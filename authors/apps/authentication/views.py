@@ -216,7 +216,7 @@ class ResetPasswordLinkView(APIView):
 
 class SubscribeAPIView(APIView):
     """
-    Class that will enable user subscribe and unsubscribe from an article.
+    Class that will enable user subscribe and unsubscribe from article mail notifications.
 
     Arguments:
         APIView {[request]} -- [contains all the payload]

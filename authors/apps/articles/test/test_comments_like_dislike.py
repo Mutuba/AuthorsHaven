@@ -14,16 +14,11 @@ class CommentsLikeDislikeTestCase(BaseTest):
 
     def test_like_comment(self):
         """Test test the liking of a comment"""
-        # created a user, logged in the user
-        # Created a token
         token = self.get_token()
 
-        # created the article
         self.create_article(token, self.testArticle)
-        # creating a comment
         response = self.create_comment(self.comment)
         comment_id = response.data["id"]
-        # like a comment
         response = self.client.put(
             "/api/articles/how-to-feed-your-dragon/comments/"
             + str(comment_id)
@@ -37,12 +32,9 @@ class CommentsLikeDislikeTestCase(BaseTest):
         """Test test the liking of a comment"""
         token = self.get_token()
 
-        # created the article
         self.create_article(token, self.testArticle)
-        # creating a comment
         response = self.create_comment(self.comment)
         comment_id = response.data["id"]
-        # like a comment
         response = self.client.put(
             "/api/articles/how-to-feed-your-dragon/comments/"
             + str(comment_id)

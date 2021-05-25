@@ -175,17 +175,6 @@ EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = config("EMAIL_PORT")
 DEFAULT_FROM_EMAIL = "bashirsheikh499@gmail.com"
 
-# EMAIL_HOST = "smtp.sendgrid.net"
-# EMAIL_HOST_USER = "apikey"
-# EMAIL_HOST_PASSWORD = (
-#     "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"
-# )
-
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# DEFAULT_FROM_EMAIL = "bashirsheikh499@gmail.com"
-
 
 CELERY_BROKER_URL = config("CELERY_BROKER_URL")
 
@@ -255,6 +244,3 @@ prod_db = dj_database_url.config(conn_max_age=500)
 DATABASES["default"].update(prod_db)
 
 DATABASE_POOL_ARGS = {"max_overflow": 10, "pool_size": 8, "recycle": 300}
-
-
-# DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}

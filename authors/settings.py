@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "social_django",
     "notifications",
+    "djcelery",
     "authors.apps.authentication",
     "authors.apps.core",
     "authors.apps.profiles",
@@ -177,6 +178,12 @@ DEFAULT_FROM_EMAIL = "bashirsheikh499@gmail.com"
 
 
 CELERY_BROKER_URL = config("CELERY_BROKER_URL")
+
+
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+
+CELERY_ACCEPT_CONTENT = ["json"]
 
 
 AUTHENTICATION_BACKENDS = (

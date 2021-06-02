@@ -1,5 +1,6 @@
 """
 Send email implementation using celery
+
 """
 
 from django.template.loader import render_to_string
@@ -10,6 +11,7 @@ from django.template.loader import render_to_string
 
 
 class SendEmail:
+
     """Responsible for sending email to registered users"""
 
     def __init__(

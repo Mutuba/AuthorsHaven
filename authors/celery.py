@@ -26,6 +26,7 @@ print("Registering debug task...")
 def debug_task(self):
     print("Request: {0!r}".format(self.request))
 
+
 @shared_task
 def task(data_to_queue):
     """Gets payload from the user and sends it to mail"""

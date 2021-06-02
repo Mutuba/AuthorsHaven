@@ -116,9 +116,7 @@ class FollowingAPIView(APIView):
 
 
 class SubscribeNotificationAPIView(APIView):
-    """
-    Toggle notification on and off
-    """
+    """Toggle notification on and off"""
 
     permission_classes = (IsAuthenticated,)
     renderer_classes = (ProfileJSONRenderer,)
@@ -143,9 +141,7 @@ class SubscribeNotificationAPIView(APIView):
 
 
 class UnsubscribeNotificationAPIView(APIView):
-    """
-    Toggle notification on and off
-    """
+    """Toggle notification on and off"""
 
     permission_classes = (IsAuthenticated,)
     renderer_classes = (ProfileJSONRenderer,)

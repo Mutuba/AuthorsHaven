@@ -24,7 +24,6 @@ from rest_framework.filters import SearchFilter
 from django.views.generic import ListView
 import django_filters
 from django_filters import rest_framework as filters
-from django.contrib.postgres.fields import ArrayField
 from .models import Article, Comment, Report, ArticleRating
 from .renderers import ArticleJSONRenderer, CommentJSONRenderer, ReportJSONRenderer
 from .serializers import ArticleSerializer, CommentSerializer, ReportSerializer
@@ -293,7 +292,7 @@ class ArticleFilter(filters.FilterSet):
         return queryset.filter(tagList__contains=[value])
 
     def filter_article_slug(self, queryset, name, value):
-        return queryset.filter(product__slug__icontains=value)
+        return queryset.filter(slug__icontains=value)
 
 
 class ArticleSearchList(generics.ListAPIView):

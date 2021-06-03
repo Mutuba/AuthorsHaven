@@ -26,8 +26,6 @@ from .serializers import (
 )
 from authors.settings import EMAIL_HOST_USER, DEFAULT_FROM_EMAIL
 from authors.apps.core.email_with_celery import SendEmail
-
-from authors.apps.core.email_with_celery import AddNumbers
 from .chk_token import authcheck_token
 from .renderers import UserJSONRenderer
 from .serializers import (

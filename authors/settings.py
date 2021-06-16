@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     "authors.apps.core",
     "authors.apps.profiles",
     "authors.apps.articles",
-    "django_filters",
     "django.contrib.postgres",
 ]
 
@@ -178,7 +177,6 @@ DEFAULT_FROM_EMAIL = "bashirsheikh499@gmail.com"
 
 
 CELERY_BROKER_URL = config("CELERY_BROKER_URL")
-
 
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"

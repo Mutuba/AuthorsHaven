@@ -296,10 +296,7 @@ class ArticleFilter(filters.FilterSet):
 
 
 class ArticleSearchList(generics.ListAPIView):
-    """
-    Implements class to enable searching and filtering
-
-    """
+    """Implements class to enable searching and filtering"""
 
     permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = Article.objects.all()
@@ -311,8 +308,7 @@ class ArticleSearchList(generics.ListAPIView):
 
 
 class ArticlesFavoriteAPIView(APIView):
-    """
-    This View allows users to Favorite and Unfavorite articles, an exception is
+    """This View allows users to Favorite and Unfavorite articles, an exception is
     thrown if the article doesn’t
     exist.
     """
@@ -322,8 +318,7 @@ class ArticlesFavoriteAPIView(APIView):
     serializer_class = ArticleSerializer
 
     def delete(self, request, article_slug=None):
-        """
-        Unfavorites an existing article with the profile unfavorite method
+        """Unfavorites an existing article with the profile unfavorite method
         """
         profile = self.request.user.profile
         serializer_context = {"request": request}
